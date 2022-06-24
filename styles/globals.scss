@@ -1,0 +1,217 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100vw;
+  height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+#__next {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: 700;
+}
+
+.container {
+  gap: 3em;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  color: #fefeff;
+  padding: 1em 2em;
+  position: relative;
+  flex-direction: column;
+  background-color: #14181b;
+}
+
+.header {
+  gap: 0.5em;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  .description {
+    max-width: 40ch;
+    font-weight: 500;
+    font-size: 1.1rem;
+    text-align: center;
+  }
+
+  .progressContainer {
+    gap: 0.5em;
+    width: 100%;
+    display: flex;
+    margin-top: 1em;
+    flex-direction: column;
+
+    .progressContainerTop {
+      gap: 0.5em;
+      display: flex;
+      font-weight: 700;
+      align-items: baseline;
+      justify-content: space-between;
+
+      .progressTitle {
+        letter-spacing: 2px;
+      }
+
+      .progressStatus {
+        font-size: 2rem;
+      }
+    }
+
+    .progressContainerBottom {
+      $height: 16px;
+      height: $height;
+      position: relative;
+      border-radius: $height / 2;
+      background-color: #424446;
+
+      &::after {
+        inset: 0;
+        content: "";
+        position: absolute;
+        border-radius: $height / 2;
+        background-color: white;
+        right: calc(100% - var(--progressBarRight, 100%));
+      }
+    }
+  }
+}
+
+.main {
+  flex: 1;
+  display: grid;
+  margin-bottom: 1em;
+}
+
+.gridSelection {
+  gap: 1em;
+
+  .gridSelectButton {
+    cursor: pointer;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    background-color: hsl(16, 100%, 70%);
+    border: 3px solid hsl(16, 100%, 36%);
+
+    &.selected,
+    &:focus,
+    &:active,
+    &:hover {
+      background-color: hsl(16, 100%, 60%);
+    }
+  }
+}
+
+.tileWrapper {
+  user-select: none;
+  perspective: 600px;
+  position: relative;
+
+  .tile {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transition: transform 1s;
+    transform-style: preserve-3d;
+
+    .tileFace {
+      width: 100%;
+      height: 100%;
+      color: white;
+      // font-size: 1.5rem;
+      border-radius: 5%;
+      line-height: 50px;
+      font-weight: bold;
+      position: absolute;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      // box-shadow: 0px 0px 0.5em 0px rgba(255, 255, 255, 0.2);
+
+      &.tileFaceFront {
+        background: #ed7063;
+      }
+
+      &.tileFaceBack {
+        background: #5a4f90;
+        transform: rotateY(180deg);
+      }
+    }
+  }
+
+  .isFlipped {
+    transform: rotateY(180deg);
+  }
+}
+
+.gameOverScreen {
+  gap: 1em;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  z-index: 1000;
+  position: fixed;
+  user-select: none;
+  margin: -1em -2em;
+  padding: 15vh 1em;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-around;
+  background: rgba(0, 0, 0, 0.9);
+
+  header {
+    font-weight: 700;
+    font-size: 2.5rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  main {
+    font-size: 4rem;
+  }
+
+  footer {
+    font-size: 1.5rem;
+
+    .button {
+      gap: 0.5em;
+      display: flex;
+      color: black;
+      cursor: pointer;
+      align-items: center;
+      border-radius: 0.3em;
+      background-color: white;
+      text-transform: uppercase;
+      padding: 0.3em 0.5em 0.3em 0.3em;
+      transition: background-color 200ms ease-in-out;
+
+      &:hover {
+        background-color: rgb(201, 201, 201);
+      }
+    }
+  }
+}
