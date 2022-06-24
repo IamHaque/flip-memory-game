@@ -174,7 +174,6 @@ export default function Home() {
 
   const initializeGame = (gridSize = 2, isNewGame = true) => {
     const uniqueTiles = (gridSize * gridSize) / 2;
-    // alert(uniqueTiles + " " + gridSize);
     const generatedTiles = initializeTiles(uniqueTiles, gridSize);
 
     const newGameState = {
@@ -201,6 +200,7 @@ export default function Home() {
     if (prevFlippedTileIndex >= 0 && prevFlippedTileIndex === tileID) return;
 
     let isGameOver = false;
+    let remainingAttempts = gameState.remainingAttempts;
 
     if (prevFlippedTileIndex >= 0) {
       setPrevFlippedTileIndex(-1);
@@ -214,11 +214,10 @@ export default function Home() {
         gameState.tiles[prevFlippedTileIndex].matched = true;
       } else {
         // Consume attempt if guessed incorrectly
-        const remainingAttempts = gameState.remainingAttempts - 1;
+        remainingAttempts -= 1;
         if (remainingAttempts <= 0) {
           isGameOver = true;
         }
-        setGameState({ ...gameState, remainingAttempts: remainingAttempts });
       }
     } else {
       setPrevFlippedTileIndex(tileID);
@@ -238,13 +237,10 @@ export default function Home() {
 
     setGameState({
       ...gameState,
-      tiles: [...flippedTiles],
       gameOver: isGameOver,
+      tiles: [...flippedTiles],
+      remainingAttempts: remainingAttempts,
     });
-
-    if (isGameOver) {
-      setGameState({ ...gameState, gameOver: true });
-    }
   };
 
   return (

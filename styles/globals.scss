@@ -42,13 +42,16 @@ a {
   color: #fefeff;
   padding: 1em 2em;
   position: relative;
+  align-items: center;
   flex-direction: column;
   background-color: #14181b;
 }
 
 .header {
   gap: 0.5em;
+  width: 100%;
   display: flex;
+  max-width: 480px;
   align-items: center;
   flex-direction: column;
 
@@ -103,7 +106,9 @@ a {
 
 .main {
   flex: 1;
+  width: 100%;
   display: grid;
+  max-width: 480px;
   margin-bottom: 1em;
 }
 
