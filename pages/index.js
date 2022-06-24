@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import Head from "next/head";
 import Tile from "../components/tile";
+import GridSelectButton from "../components/grid-selection-button";
 
 const allEmojis = [
   "✌",
@@ -144,6 +145,8 @@ const mapRange = (value, low1, high1, low2, high2) =>
   low2 + ((high2 - low2) * (value - low1)) / (high1 - low1);
 
 export default function Home() {
+  const gridSizes = [2, 4, 6, 8];
+
   const [gameState, setGameState] = useState({
     tiles: [],
     newGame: true,
@@ -153,6 +156,10 @@ export default function Home() {
     uniqueTiles: undefined,
     remainingAttempts: undefined,
   });
+
+  const [timer, setTimer] = useState(0);
+  const [isTimerActive, setIsTimerActive] = useState(false);
+
   const [prevFlippedTileIndex, setPrevFlippedTileIndex] = useState(undefined);
 
   useEffect(() => {
@@ -160,8 +167,16 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (gameState.gameOver) return;
+    if (gameState.gameOver) {
+      resetTimer();
+      return;
+    }
     if (gameState.tiles.length <= 0) return;
+
+    if (gameState.remainingAttempts <= 0) {
+      setGameState({ ...gameState, gameOver: true });
+      return;
+    }
 
     let hasWon = true;
     for (let tile of gameState.tiles) {
@@ -171,6 +186,41 @@ export default function Home() {
     }
     if (hasWon) setGameState({ ...gameState, gameOver: true });
   }, [gameState]);
+
+  useEffect(() => {
+    let interval = null;
+    if (isTimerActive) {
+      interval = setInterval(() => {
+        setTimer((seconds) => seconds + 1);
+      }, 1000);
+    } else if (!isTimerActive && timer !== 0) {
+      clearInterval(interval);
+    }
+
+    return () => clearInterval(interval);
+  }, [timer, isTimerActive]);
+
+  useEffect(() => {
+    if (timer % 5 === 0 && timer > 0) {
+      setGameState({
+        ...gameState,
+        remainingAttempts: gameState.remainingAttempts - 1,
+      });
+    }
+  }, [timer]);
+
+  const toggleTimer = () => {
+    setIsTimerActive(!isTimerActive);
+  };
+
+  const restartTimer = () => {
+    setTimer(0);
+  };
+
+  const resetTimer = () => {
+    setTimer(0);
+    setIsTimerActive(false);
+  };
 
   const initializeGame = (gridSize = 2, isNewGame = true) => {
     const uniqueTiles = (gridSize * gridSize) / 2;
@@ -182,8 +232,8 @@ export default function Home() {
       gridSize: gridSize,
       tiles: generatedTiles,
       uniqueTiles: uniqueTiles,
-      totalAttempts: Math.ceil(uniqueTiles * 2.5),
-      remainingAttempts: Math.ceil(uniqueTiles * 2.5),
+      totalAttempts: Math.floor(uniqueTiles * 2.25),
+      remainingAttempts: Math.floor(uniqueTiles * 2.25),
     };
 
     setGameState(newGameState);
@@ -218,6 +268,7 @@ export default function Home() {
         if (remainingAttempts <= 0) {
           isGameOver = true;
         }
+        restartTimer();
       }
     } else {
       setPrevFlippedTileIndex(tileID);
@@ -241,6 +292,15 @@ export default function Home() {
       tiles: [...flippedTiles],
       remainingAttempts: remainingAttempts,
     });
+  };
+
+  const buttonClickHandler = (selectedGridSize) => {
+    initializeGame(selectedGridSize, false);
+    toggleTimer();
+  };
+
+  const restartGame = () => {
+    initializeGame();
   };
 
   return (
@@ -269,7 +329,7 @@ export default function Home() {
             <div
               className="button"
               onClick={() => {
-                initializeGame();
+                restartGame();
               }}
             >
               <span>🔄</span>
@@ -283,79 +343,60 @@ export default function Home() {
 
       <div className="header">
         <p className="title">Tile Match</p>
-
-        <p className="description">
-          You have {gameState.remainingAttempts} attempts to match all the
-          unmatched tiles.
-        </p>
-
-        <div className="progressContainer">
-          <div className="progressContainerTop">
-            <p className="progressTitle">Attempts remaining</p>
-            <p className="progressStatus">
-              {gameState.remainingAttempts} / {gameState.totalAttempts}
+        {gameState.newGame ? (
+          <p className="description">
+            Select a grid layout from the below options.
+            <br />
+            Each option scales exponentially in difficulty.
+          </p>
+        ) : (
+          <>
+            <p className="description">
+              You have{" "}
+              <span className="strong">{gameState.totalAttempts} attempts</span>{" "}
+              to match all the unmatched tiles. An attempt will be removed every{" "}
+              <span className="strong">5 seconds</span> unless guessed
+              incorrectly.
             </p>
-          </div>
 
-          <div
-            className="progressContainerBottom"
-            style={{
-              "--progressBarRight": `${
-                (gameState.remainingAttempts / gameState.totalAttempts) * 100
-              }%`,
-            }}
-          ></div>
-        </div>
+            <div className="progressContainer">
+              <div className="progressContainerTop">
+                <p className="progressTitle">Attempts remaining</p>
+                <p className="progressStatus">
+                  {gameState.remainingAttempts} / {gameState.totalAttempts}
+                </p>
+              </div>
+
+              <div
+                className="progressContainerBottom"
+                style={{
+                  "--progressBarRight": `${
+                    (gameState.remainingAttempts / gameState.totalAttempts) *
+                    100
+                  }%`,
+                }}
+              ></div>
+            </div>
+          </>
+        )}
       </div>
 
       {gameState.newGame ? (
         <div className="gridSelection main">
-          <div
-            className={`gridSelectButton center ${
-              gameState.gridSize === 2 ? "selected" : ""
-            }`}
-            onClick={() => {
-              initializeGame(2, false);
-            }}
-          >
-            2 x 2
-          </div>
-          <div
-            className={`gridSelectButton center ${
-              gameState.gridSize === 4 ? "selected" : ""
-            }`}
-            onClick={() => {
-              initializeGame(4, false);
-            }}
-          >
-            4 x 4
-          </div>
-          <div
-            className={`gridSelectButton center ${
-              gameState.gridSize === 6 ? "selected" : ""
-            }`}
-            onClick={() => {
-              initializeGame(6, false);
-            }}
-          >
-            6 x 6
-          </div>
-          <div
-            className={`gridSelectButton center ${
-              gameState.gridSize === 8 ? "selected" : ""
-            }`}
-            onClick={() => {
-              initializeGame(8, false);
-            }}
-          >
-            8 x 8
-          </div>
+          {gridSizes.map((item, index) => (
+            <GridSelectButton
+              hue={mapRange(index, 0, 3, 260, 360) * -1}
+              key={index}
+              gridSize={item}
+              clickHandler={buttonClickHandler}
+            />
+          ))}
         </div>
       ) : (
         <div
           className="main"
           style={{
-            gap: `${mapRange(gameState.gridSize, 2, 8, 1.5, 0.5)}em`,
+            gap: `${mapRange(gameState.gridSize, 2, 8, 1.5, 0.3)}em`,
             gridTemplateRows: `repeat(${gameState.gridSize}, 1fr)`,
             gridTemplateColumns: `repeat(${gameState.gridSize}, 1fr)`,
           }}
@@ -371,6 +412,19 @@ export default function Home() {
             />
           ))}
         </div>
+      )}
+
+      {!gameState.newGame ? (
+        <div
+          className="restart"
+          onClick={() => {
+            restartGame();
+          }}
+        >
+          Restart Game
+        </div>
+      ) : (
+        <></>
       )}
     </div>
   );
