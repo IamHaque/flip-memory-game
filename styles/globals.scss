@@ -2,24 +2,24 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  // outline: 2px solid #ed716322;
 }
 
 html,
 body {
-  width: 100vw;
-  height: 100vh;
-  min-height: -webkit-fill-available;
+  height: -webkit-fill-available;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
 #__next {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
 }
 
 a {
+  display: block;
   color: inherit;
   text-decoration: none;
 }
@@ -37,6 +37,11 @@ a {
 .title {
   font-size: 3rem;
   font-weight: 700;
+}
+
+.disabled {
+  cursor: auto;
+  pointer-events: none;
 }
 
 .container {
@@ -119,6 +124,7 @@ a {
 
 .gridSelection {
   gap: 1em;
+  grid-template-columns: 1fr 1fr;
 
   .gridSelectButton {
     --hue: 16;
@@ -126,16 +132,18 @@ a {
     cursor: pointer;
     font-size: 2rem;
     font-weight: 700;
+    border-radius: 5%;
     letter-spacing: 2px;
-    color: hsl(0, 0%, 10%);
-    background-color: hsl(var(--hue), 100%, 60%);
-    border: 5px solid hsl(var(--hue), 100%, 30%);
+    color: hsl(var(--hue), 50%, 30%);
+    background-color: hsl(var(--hue), 50%, 60%);
+    border: 5px solid hsl(var(--hue), 50%, 40%);
+    transition: background-color 200ms ease-in-out;
 
     &.selected,
     &:focus,
     &:active,
     &:hover {
-      background-color: hsl(var(--hue), 100%, 40%);
+      background-color: hsl(var(--hue), 50%, 50%);
     }
   }
 }
@@ -259,9 +267,8 @@ a {
   }
 }
 
-.restartMainButton {
+.bottomButton {
   width: 100%;
-  padding: 0.4em;
   cursor: pointer;
   max-width: 480px;
   border-radius: 2px;
@@ -275,5 +282,10 @@ a {
 
   &:hover {
     background-color: hsl(250, 29%, 34%);
+  }
+
+  & > * {
+    padding: 0.5em;
+    display: block;
   }
 }
