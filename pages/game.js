@@ -33,6 +33,7 @@ export default function Game({ username, ...props }) {
   const [isTimerActive, setIsTimerActive] = useState(false);
 
   const [currentUser, setCurrentUser] = useState(username);
+  const [leaderBoard, setLeaderBoard] = useState([]);
 
   const [prevFlippedTileIndex, setPrevFlippedTileIndex] = useState(undefined);
 
@@ -78,6 +79,10 @@ export default function Game({ username, ...props }) {
           });
         })();
       }
+
+      (async () => {
+        await getLeaderboardData();
+      })();
 
       resetTimer();
       return;
@@ -273,6 +278,43 @@ export default function Game({ username, ...props }) {
     return data.scores;
   };
 
+  const getLeaderboardData = async () => {
+    const requestOptions = {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    };
+
+    const response = await fetch("/api/leaderboard/" + gameState.gridSize);
+    const data = await response.json();
+
+    if (data && data.leaderboard) {
+      setLeaderBoard(data.leaderboard);
+    }
+  };
+
+  let LeaderBoard;
+  if (leaderBoard && leaderBoard.length > 0) {
+    console.log(leaderBoard);
+    LeaderBoard = (
+      <>
+        <p className="titleText">Leader Board</p>
+
+        <section className="leaderboardContainer">
+          {leaderBoard.map((user, index) => (
+            <p
+              className={`row ${user.username === currentUser ? "active" : ""}`}
+              key={index}
+            >
+              <span>{index + 1}.</span>
+              <span>{user.username}</span>
+              <span>{user.score}</span>
+            </p>
+          ))}
+        </section>
+      </>
+    );
+  }
+
   // Show game-over overlay if game is over
   let GameEndOverlay = <></>;
   if (gameState.gameWon || gameState.gameOver) {
@@ -308,6 +350,8 @@ export default function Game({ username, ...props }) {
             <span>Restart</span>
           </div>
         </footer>
+
+        {LeaderBoard}
       </div>
     );
   }
