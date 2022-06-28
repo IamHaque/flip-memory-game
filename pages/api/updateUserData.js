@@ -1,12 +1,13 @@
 import path from "path";
-import * as fs from "fs";
+import { promises as fs } from "fs";
 
 const DB_PATH = path.resolve(process.cwd(), "data") + "/db.json";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
     // Get user data from db
-    let dbData = await fs.promises.readFile(DB_PATH);
+    const DB_PATH = path.join(process.cwd(), "json");
+    let dbData = await fs.readFile(DB_PATH + "/db.json", "utf8");
     dbData = JSON.parse(dbData);
 
     // Get data from the request
@@ -38,7 +39,7 @@ export default async function handler(req, res) {
     }
 
     // Add updated user data to db
-    await fs.promises.writeFile(DB_PATH, JSON.stringify(updatedDBData));
+    await fs.writeFile(DB_PATH + "/db.json", JSON.stringify(updatedDBData));
 
     res.status(200).json({ status: "success", message: "User updated" });
   } else {
