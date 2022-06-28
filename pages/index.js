@@ -66,7 +66,7 @@ export default function Home() {
     MainContent = (
       <div className={styles.inputContainer}>
         <div className={styles.inputWrapper}>
-          <label htmlFor="username">Enter username</label>
+          <label for="username">Enter username</label>
           <input
             type="text"
             id="username"

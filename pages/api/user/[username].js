@@ -1,12 +1,10 @@
-import path from "path";
-import { promises as fs } from "fs";
+import * as fs from "fs";
 
-const DB_PATH = path.resolve(process.cwd(), "data") + "/db.json";
+const DB_PATH = "./data/db.json";
 
 export default async function handler(req, res) {
   // Get user data from db
-  const DB_PATH = "./json";
-  let dbData = await fs.readFile(DB_PATH + "/db.json", "utf8");
+  let dbData = await fs.promises.readFile(DB_PATH);
   dbData = JSON.parse(dbData);
 
   // Get username from the request
