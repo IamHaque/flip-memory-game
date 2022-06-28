@@ -5,7 +5,7 @@ const DB_PATH = path.resolve(process.cwd(), "data") + "/db.json";
 
 export default async function handler(req, res) {
   // Get user data from db
-  const DB_PATH = path.join(process.cwd(), "json");
+  const DB_PATH = "./json";
   let dbData = await fs.readFile(DB_PATH + "/db.json", "utf8");
   dbData = JSON.parse(dbData);
 

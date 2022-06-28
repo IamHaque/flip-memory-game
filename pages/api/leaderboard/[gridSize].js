@@ -3,7 +3,7 @@ import { promises as fs } from "fs";
 
 export default async function handler(req, res) {
   // Get user data from db
-  const DB_PATH = path.join(process.cwd(), "json");
+  const DB_PATH = "./json";
   let dbData = await fs.readFile(DB_PATH + "/db.json", "utf8");
   dbData = JSON.parse(dbData);
 
