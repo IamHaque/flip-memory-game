@@ -1,7 +1,6 @@
-import path from "path";
 import * as fs from "fs";
 
-const DB_PATH = path.resolve(process.cwd(), "data") + "/db.json";
+const DB_PATH = "/data/db.json";
 
 export default async function handler(req, res) {
   // Get user data from db
