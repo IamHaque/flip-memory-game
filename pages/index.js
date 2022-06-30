@@ -82,11 +82,15 @@ export default function Home() {
         >
           Check Availability
         </div>
-        <small className={styles.error}>
-          {response && response.status && response.status === "failed"
-            ? response.message
-            : ""}
-        </small>
+
+        {response && response.status && response.status === "failed" ? (
+          <small
+            className={styles.error}
+            dangerouslySetInnerHTML={{ __html: response.message }}
+          ></small>
+        ) : (
+          ""
+        )}
       </div>
     );
   }
