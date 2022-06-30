@@ -15,18 +15,20 @@ export default async function handler(req, res) {
   if (username === "" || !username) {
     return res
       .status(401)
-      .json({ status: "failed", message: "Enter a valid username" });
+      .json({ status: "failed", message: "Enter a username" });
   }
 
   // Check if username is valid
   if (
-    /^(?=.{8,15}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/.test(
+    /^(?=.{5,15}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/.test(
       username
     ) === false
   ) {
-    return res
-      .status(401)
-      .json({ status: "failed", message: "Enter a valid username" });
+    return res.status(401).json({
+      status: "failed",
+      message:
+        "Username have 5 to 15 characters.<br>Username can only have alphabets, numbers, . and _<br>Username must not start or end with . or _",
+    });
   }
 
   try {
