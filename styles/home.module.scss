@@ -1,0 +1,115 @@
+.header,
+.main {
+  width: 100%;
+  max-width: 480px;
+}
+
+.main {
+  flex: 1;
+  gap: 5em;
+  display: flex;
+  padding: 2em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.greetUser {
+  width: 100%;
+  font-weight: 300;
+  font-size: 1.5rem;
+  text-align: center;
+
+  .small {
+    width: 35ch;
+    font-size: 1.2rem;
+    margin: 0.5em auto 0;
+  }
+
+  .username {
+    font-size: 2.5rem;
+    font-weight: 700;
+    word-wrap: break-word;
+    font-family: "Courier New", Courier, monospace;
+  }
+}
+
+.inputContainer {
+  gap: 1em;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .inputWrapper {
+    gap: 1em;
+    display: flex;
+    flex-direction: column;
+
+    label {
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      font-family: "Courier New", Courier, monospace;
+    }
+
+    input {
+      color: black;
+      padding: 0.5em;
+      font-size: 1.5rem;
+    }
+  }
+
+  .button {
+    padding: 0.75em;
+    cursor: pointer;
+    border-radius: 2px;
+    text-align: center;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    background-color: hsl(200, 29%, 40%);
+    transition: background-color 200ms ease-in-out;
+
+    &:focus,
+    &:active,
+    &:hover {
+      background-color: hsl(200, 29%, 30%);
+    }
+  }
+}
+
+.bottomButtons {
+  gap: 1em;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  & > * {
+    width: 100%;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 2px;
+    letter-spacing: 2px;
+    transition: background-color 200ms ease-in-out;
+    background-color: hsl(var(--hue, 0), 29%, 40%);
+
+    &:focus,
+    &:active,
+    &:hover {
+      background-color: hsl(var(--hue, 0), 29%, 35%);
+    }
+  }
+
+  .startGameButton {
+    --hue: 250;
+
+    & > a {
+      padding: 1em;
+    }
+  }
+
+  .changeUsername {
+    --hue: 0;
+    padding: 1em;
+  }
+}
