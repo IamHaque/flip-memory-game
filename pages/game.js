@@ -208,7 +208,7 @@ export default function Game({ username, ...props }) {
           isGameOver = true;
         }
 
-        unFlipFlippedTiles(tileID, prevFlippedTileIndex);
+        unFlipFlippedTiles(isGameOver, remainingAttempts);
         restartTimer();
       }
 
@@ -239,7 +239,7 @@ export default function Game({ username, ...props }) {
     });
   };
 
-  const unFlipFlippedTiles = (tile1, tile2) => {
+  const unFlipFlippedTiles = (gameOver, remainingAttempts) => {
     setTimeout(() => {
       const flippedTiles = gameState.tiles.map((tile) => {
         return {
@@ -249,6 +249,8 @@ export default function Game({ username, ...props }) {
       });
       setGameState({
         ...gameState,
+        gameOver,
+        remainingAttempts,
         tiles: [...flippedTiles],
       });
       setBeingFlipped(false);
