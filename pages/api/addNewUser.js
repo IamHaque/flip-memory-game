@@ -49,7 +49,8 @@ export default async function handler(req, res) {
     const errorData =
       e.meta && e.meta.target
         ? e.meta.target.map((item) => `${item} already exists.`)
-        : e;
+        : "An error occurred.";
+    console.log(e);
     return res.status(404).json({ status: "failed", message: errorData });
   }
 }

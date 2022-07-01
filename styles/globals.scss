@@ -2,7 +2,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  // outline: 2px solid #ed716322;
 }
 
 html,
@@ -35,8 +34,9 @@ a {
 }
 
 .title {
-  font-size: 3rem;
+  font-size: 3em;
   font-weight: 700;
+  text-align: center;
 }
 
 .disabled {
@@ -68,7 +68,7 @@ a {
   .description {
     max-width: 50ch;
     font-weight: 500;
-    font-size: 1.1rem;
+    font-size: 1.1em;
     text-align: center;
   }
 
@@ -91,7 +91,7 @@ a {
       }
 
       .progressStatus {
-        font-size: 2rem;
+        font-size: 2em;
       }
     }
 
@@ -130,9 +130,10 @@ a {
     --hue: 16;
 
     cursor: pointer;
-    font-size: 2rem;
+    font-size: 2em;
     font-weight: 700;
     border-radius: 5%;
+    text-align: center;
     letter-spacing: 2px;
     color: hsl(var(--hue), 50%, 30%);
     background-color: hsl(var(--hue), 50%, 60%);
@@ -164,21 +165,19 @@ a {
       width: 100%;
       height: 100%;
       color: white;
-      // font-size: 1.5rem;
       border-radius: 5%;
       line-height: 50px;
       font-weight: bold;
       position: absolute;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
-      // box-shadow: 0px 0px 0.5em 0px rgba(255, 255, 255, 0.2);
 
       &.tileFaceFront {
-        background: #ed7063;
+        background: hsl(6, 79%, 66%);
       }
 
       &.tileFaceBack {
-        background: #5a4f90;
+        background: hsl(250, 29%, 44%);
         transform: rotateY(180deg);
       }
     }
@@ -189,84 +188,6 @@ a {
   }
 }
 
-.gameOverScreen {
-  gap: 1em;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  z-index: 1000;
-  position: fixed;
-  user-select: none;
-  margin: -1em -2em;
-  padding: 15vh 10%;
-  align-items: center;
-  flex-direction: column;
-  background-color: #14181b;
-  justify-content: space-around;
-  background-image: linear-gradient(5deg, #14181b 0%, #28313b 74%);
-
-  header {
-    font-weight: 700;
-    font-size: 3rem;
-    letter-spacing: 5px;
-    font-family: "Courier New", Courier, monospace;
-  }
-
-  main {
-    width: 100%;
-    max-width: 480px;
-
-    .score {
-      gap: 2em;
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-
-      span:first-child {
-        font-size: 1.5rem;
-      }
-
-      span:last-child {
-        font-weight: 700;
-        font-size: 3.5rem;
-        letter-spacing: 1px;
-        color: hsl(120, 29%, 50%);
-        font-family: "Courier New", Courier, monospace;
-      }
-    }
-
-    .highScore {
-      color: hsl(210, 5%, 60%);
-
-      span:last-child {
-        color: hsl(210, 5%, 40%);
-      }
-    }
-  }
-
-  footer {
-    width: 100%;
-    max-width: 480px;
-
-    .restartGameButton {
-      padding: 1em;
-      cursor: pointer;
-      border-radius: 2px;
-      text-align: center;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      background-color: hsl(120, 29%, 40%);
-      transition: background-color 200ms ease-in-out;
-
-      &:focus,
-      &:active,
-      &:hover {
-        background-color: hsl(120, 29%, 30%);
-      }
-    }
-  }
-}
-
 .bottomButton {
   width: 100%;
   cursor: pointer;
@@ -274,7 +195,7 @@ a {
   border-radius: 2px;
   text-align: center;
   margin-top: -1em;
-  line-height: 1.2rem;
+  line-height: 1.2em;
   letter-spacing: 3px;
   text-transform: uppercase;
   background-color: hsl(250, 29%, 44%);
@@ -290,48 +211,163 @@ a {
   }
 }
 
-.leaderboardContainer {
-  flex: 1;
-  gap: 5px;
+.gameOverScreen {
+  gap: 2em;
   width: 100%;
-  padding: 10px;
-  display: flex;
-  padding-top: 0;
-  max-width: 480px;
-  border-radius: 2px;
-  overflow-y: scroll;
+  height: 100%;
+  z-index: 1000;
+  position: fixed;
+  user-select: none;
+  margin: -1em -2em;
   flex-direction: column;
-  background-color: hsl(206, 15%, 8%);
+  background-color: #14181b;
+  background-image: linear-gradient(5deg, #14181b 0%, #28313b 74%);
 
-  .row {
-    gap: 5px;
+  .top {
+    gap: 2em;
     width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 3fr 1fr;
+    display: flex;
+    max-width: 480px;
+    flex-direction: column;
 
-    span {
-      padding: 5px 10px;
+    header {
+      font-size: 2.5em;
+      font-weight: 700;
       text-align: center;
+      letter-spacing: 5px;
+      font-family: "Courier New", Courier, monospace;
+    }
+
+    main {
+      .score {
+        gap: 1.5em;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        span:first-child {
+          font-size: 1.5em;
+        }
+
+        span:last-child {
+          font-weight: 700;
+          font-size: 3.5em;
+          letter-spacing: 1px;
+          color: hsl(120, 29%, 50%);
+          font-family: "Courier New", Courier, monospace;
+        }
+      }
+
+      .highScore {
+        color: hsl(210, 5%, 60%);
+
+        span:last-child {
+          color: hsl(210, 5%, 40%);
+        }
+      }
+    }
+
+    footer {
+      .restartGameButton {
+        padding: 1em;
+        cursor: pointer;
+        border-radius: 2px;
+        text-align: center;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        background-color: hsl(120, 29%, 40%);
+        transition: background-color 200ms ease-in-out;
+
+        &:focus,
+        &:active,
+        &:hover {
+          background-color: hsl(120, 29%, 30%);
+        }
+      }
     }
   }
 
-  .active {
-    font-weight: 700;
-    color: hsl(120deg, 29%, 60%);
+  .bottom {
+    width: 100%;
+    max-width: 480px;
+    max-height: 35vh;
+
+    .leaderboardContainer {
+      flex: 1;
+      gap: 5px;
+      padding: 5px;
+      display: flex;
+      padding-top: 0;
+      max-height: 100%;
+      border-radius: 2px;
+      overflow-y: scroll;
+      flex-direction: column;
+      background-color: hsl(206, 15%, 8%);
+
+      .row {
+        gap: 5px;
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 3fr 1fr;
+
+        span {
+          padding: 5px 10px;
+          text-align: center;
+        }
+      }
+
+      .active {
+        font-weight: 700;
+        color: hsl(120deg, 29%, 60%);
+      }
+    }
+
+    .titleText {
+      width: 100%;
+      padding: 10px;
+      max-width: 480px;
+      font-size: 1.2em;
+      text-align: center;
+      letter-spacing: 5px;
+      content: "Leader Board";
+      text-transform: uppercase;
+      background-color: hsl(206, 15%, 6%);
+      font-family: "Courier New", Courier, monospace;
+    }
   }
 }
 
-.titleText {
-  width: 100%;
-  padding: 10px;
-  margin-top: 2em;
-  max-width: 480px;
-  font-size: 1.2rem;
-  text-align: center;
-  letter-spacing: 5px;
-  margin-bottom: -0.8em;
-  content: "Leader Board";
-  text-transform: uppercase;
-  background-color: hsl(206, 15%, 6%);
-  font-family: "Courier New", Courier, monospace;
+@media only screen and (max-width: 600px) {
+  .gameOverScreen {
+    .top,
+    .bottom {
+      padding: 0 1em;
+    }
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  body {
+    font-size: 12px;
+  }
+
+  .gameOverScreen {
+    .top,
+    .bottom {
+      padding: 0 2em;
+    }
+  }
+}
+
+@media only screen and (max-width: 320px) {
+  body {
+    font-size: 10px;
+  }
+
+  .gameOverScreen {
+    .top,
+    .bottom {
+      padding: 0 2em;
+    }
+  }
 }

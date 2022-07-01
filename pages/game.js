@@ -22,13 +22,6 @@ export default function Game({ username, ...props }) {
     remainingAttempts: undefined,
   });
 
-  const [userDeviceData, setUserDeviceData] = useState({
-    langStatus: null,
-    userVendor: null,
-    userAgentStatus: null,
-    userAgentDataStatus: null,
-  });
-
   const [timer, setTimer] = useState(0);
   const [isTimerActive, setIsTimerActive] = useState(false);
 
@@ -36,6 +29,7 @@ export default function Game({ username, ...props }) {
   const [leaderBoard, setLeaderBoard] = useState([]);
 
   const [prevFlippedTileIndex, setPrevFlippedTileIndex] = useState(undefined);
+  const [beingFlipped, setBeingFlipped] = useState(undefined);
 
   // Initialize game data on page load
   useEffect(() => {
@@ -45,13 +39,6 @@ export default function Game({ username, ...props }) {
     if (localUsername) {
       setCurrentUser(localUsername);
     }
-
-    setUserDeviceData({
-      langStatus: navigator.language,
-      userVendor: navigator.vendor,
-      userAgentStatus: navigator.userAgent,
-      userAgentDataStatus: navigator.userAgentData,
-    });
   }, []);
 
   // Update game state
@@ -101,9 +88,9 @@ export default function Game({ username, ...props }) {
     if (hasWon) setGameState({ ...gameState, gameOver: true, gameWon: true });
   }, [gameState]);
 
-  // Decrement remaining attempts every 5 seconds of inactivity
+  // Decrement remaining attempts every 10 seconds of inactivity
   useEffect(() => {
-    if (timer % 5 === 0 && timer > 0) {
+    if (timer % 10 === 0 && timer > 0) {
       setGameState({
         ...gameState,
         remainingAttempts: gameState.remainingAttempts - 1,
@@ -165,6 +152,7 @@ export default function Game({ username, ...props }) {
       remainingAttempts: Math.floor(uniqueTiles * 2.25),
     };
 
+    setBeingFlipped(false);
     setGameState(newGameState);
     setPrevFlippedTileIndex(-1);
   };
@@ -188,23 +176,27 @@ export default function Game({ username, ...props }) {
   };
 
   const tileClickHandler = (tileID) => {
+    // Return if already being flipped
+    if (beingFlipped) return;
+
     // Return if clicked on already matched tile
     if (gameState.tiles[tileID].matched) return;
 
     // Return if clicked on last flipped tile
     if (prevFlippedTileIndex >= 0 && prevFlippedTileIndex === tileID) return;
 
+    setBeingFlipped(true);
+
     let isGameOver = false;
     let remainingAttempts = gameState.remainingAttempts;
 
     if (prevFlippedTileIndex >= 0) {
-      setPrevFlippedTileIndex(-1);
-
       // Checks if last flipped tile and current tile match
       if (
         gameState.tiles[prevFlippedTileIndex].content ===
         gameState.tiles[tileID].content
       ) {
+        setBeingFlipped(false);
         gameState.tiles[tileID].matched = true;
         gameState.tiles[prevFlippedTileIndex].matched = true;
       } else {
@@ -216,9 +208,13 @@ export default function Game({ username, ...props }) {
           isGameOver = true;
         }
 
+        unFlipFlippedTiles(tileID, prevFlippedTileIndex);
         restartTimer();
       }
+
+      setPrevFlippedTileIndex(-1);
     } else {
+      setBeingFlipped(false);
       setPrevFlippedTileIndex(tileID);
     }
 
@@ -241,6 +237,22 @@ export default function Game({ username, ...props }) {
       tiles: [...flippedTiles],
       remainingAttempts: remainingAttempts,
     });
+  };
+
+  const unFlipFlippedTiles = (tile1, tile2) => {
+    setTimeout(() => {
+      const flippedTiles = gameState.tiles.map((tile) => {
+        return {
+          ...tile,
+          flipped: tile.matched,
+        };
+      });
+      setGameState({
+        ...gameState,
+        tiles: [...flippedTiles],
+      });
+      setBeingFlipped(false);
+    }, 1000);
   };
 
   const gridSelectionButtonClickHandler = async (selectedGridSize) => {
@@ -304,6 +316,17 @@ export default function Game({ username, ...props }) {
               <span>{user.score}</span>
             </p>
           ))}
+          {leaderBoard.length < 5 ? (
+            new Array(5 - leaderBoard.length).fill(0).map((_, index) => (
+              <p className="row" key={index + "randomSalt01"}>
+                <span>-</span>
+                <span>-</span>
+                <span>-</span>
+              </p>
+            ))
+          ) : (
+            <></>
+          )}
         </section>
       </>
     );
@@ -313,39 +336,41 @@ export default function Game({ username, ...props }) {
   let GameEndOverlay = <></>;
   if (gameState.gameWon || gameState.gameOver) {
     GameEndOverlay = (
-      <div className="gameOverScreen">
-        <header>
-          <p>{gameState.gameWon ? "You Won!!" : "You lose!!"}</p>
-        </header>
+      <div className="gameOverScreen center">
+        <div className="top">
+          <header>
+            <p>{gameState.gameWon ? "You Won!!" : "You lose!!"}</p>
+          </header>
 
-        <main>
-          <p className="score">
-            <span>Score</span>
-            <span>
-              {Math.floor(
-                (gameState.remainingAttempts / gameState.totalAttempts) * 100
-              )}
-              %
-            </span>
-          </p>
-          <p className="score highScore">
-            <span>High Score</span>
-            <span>{gameState.highScores[gameState.gridSize]}%</span>
-          </p>
-        </main>
+          <main>
+            <p className="score">
+              <span>Score</span>
+              <span>
+                {Math.floor(
+                  (gameState.remainingAttempts / gameState.totalAttempts) * 100
+                )}
+                %
+              </span>
+            </p>
+            <p className="score highScore">
+              <span>High Score</span>
+              <span>{gameState.highScores[gameState.gridSize]}%</span>
+            </p>
+          </main>
 
-        <footer>
-          <div
-            className="restartGameButton"
-            onClick={() => {
-              restartGame();
-            }}
-          >
-            <span>Restart</span>
-          </div>
-        </footer>
+          <footer>
+            <div
+              className="restartGameButton"
+              onClick={() => {
+                restartGame();
+              }}
+            >
+              <span>Restart</span>
+            </div>
+          </footer>
+        </div>
 
-        {LeaderBoard}
+        <div className="bottom">{LeaderBoard}</div>
       </div>
     );
   }
@@ -367,7 +392,7 @@ export default function Game({ username, ...props }) {
           You have{" "}
           <span className="strong">{gameState.totalAttempts} attempts</span> to
           match all the unmatched tiles. An attempt will be removed every{" "}
-          <span className="strong">5 seconds</span>.
+          <span className="strong">10 seconds</span>.
         </p>
 
         <div className="progressContainer">
