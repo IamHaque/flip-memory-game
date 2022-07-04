@@ -66,9 +66,8 @@ a {
   flex-direction: column;
 
   .description {
-    max-width: 50ch;
+    max-width: 90%;
     font-weight: 500;
-    font-size: 1.1em;
     text-align: center;
   }
 
@@ -77,14 +76,15 @@ a {
     width: 100%;
     display: flex;
     margin-top: 1em;
-    flex-direction: column;
+    justify-content: space-evenly;
 
     .progressContainerTop {
       gap: 0.5em;
       display: flex;
       font-weight: 700;
-      align-items: baseline;
-      justify-content: space-between;
+      align-items: center;
+      flex-direction: column;
+      text-transform: uppercase;
 
       .progressTitle {
         letter-spacing: 2px;
@@ -135,7 +135,7 @@ a {
     border-radius: 5%;
     text-align: center;
     letter-spacing: 2px;
-    color: hsl(var(--hue), 50%, 30%);
+    color: hsl(var(--hue), 50%, 20%);
     background-color: hsl(var(--hue), 50%, 60%);
     border: 5px solid hsl(var(--hue), 50%, 40%);
     transition: background-color 200ms ease-in-out;

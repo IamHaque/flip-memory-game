@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import Link from "next/link";
 
-import { mapRange, initializeTiles } from "../shared/utils";
+import { mapRange, initializeTiles, showElapsedTime } from "../shared/utils";
 
 import Tile from "../components/tile";
 import GridSelectButton from "../components/grid-selection-button";
@@ -13,20 +13,20 @@ export default function Game({ username, ...props }) {
   const [gameState, setGameState] = useState({
     tiles: [],
     newGame: true,
-    gameWon: false,
     gameOver: false,
+    attempts: undefined,
     gridSize: undefined,
     highScores: undefined,
     uniqueTiles: undefined,
-    totalAttempts: undefined,
-    remainingAttempts: undefined,
+    matchedTiles: undefined,
   });
 
   const [timer, setTimer] = useState(0);
   const [isTimerActive, setIsTimerActive] = useState(false);
 
-  const [currentUser, setCurrentUser] = useState(username);
+  const [score, setScore] = useState(0);
   const [leaderBoard, setLeaderBoard] = useState([]);
+  const [currentUser, setCurrentUser] = useState(username);
 
   const [prevFlippedTileIndex, setPrevFlippedTileIndex] = useState(undefined);
   const [beingFlipped, setBeingFlipped] = useState(undefined);
@@ -44,10 +44,10 @@ export default function Game({ username, ...props }) {
   // Update game state
   useEffect(() => {
     if (gameState.gameOver) {
+      const currentScore = getScore();
+      setScore(currentScore);
+
       // Save high score to local storage
-      const currentScore = Math.floor(
-        (gameState.remainingAttempts / gameState.totalAttempts) * 100
-      );
       if (currentScore > gameState.highScores[gameState.gridSize]) {
         const updatedHighScores = { ...gameState.highScores };
         updatedHighScores[gameState.gridSize] = currentScore;
@@ -57,27 +57,22 @@ export default function Game({ username, ...props }) {
           JSON.stringify(updatedHighScores)
         );
 
-        setGameState({ ...gameState, highScores: updatedHighScores });
-
         (async () => {
           await updateDBData(currentScore);
         })();
+
+        setGameState({ ...gameState, highScores: updatedHighScores });
       }
 
       (async () => {
         await getLeaderboardData();
       })();
 
-      resetTimer();
+      toggleTimer();
       return;
     }
 
     if (gameState.tiles.length <= 0) return;
-
-    if (gameState.remainingAttempts <= 0) {
-      setGameState({ ...gameState, gameOver: true });
-      return;
-    }
 
     let hasWon = true;
     for (let tile of gameState.tiles) {
@@ -85,18 +80,8 @@ export default function Game({ username, ...props }) {
       hasWon = false;
       break;
     }
-    if (hasWon) setGameState({ ...gameState, gameOver: true, gameWon: true });
+    if (hasWon) setGameState({ ...gameState, gameOver: true });
   }, [gameState]);
-
-  // Decrement remaining attempts every 10 seconds of inactivity
-  useEffect(() => {
-    if (timer % 10 === 0 && timer > 0) {
-      setGameState({
-        ...gameState,
-        remainingAttempts: gameState.remainingAttempts - 1,
-      });
-    }
-  }, [timer]);
 
   // Update timer every second
   useEffect(() => {
@@ -141,20 +126,40 @@ export default function Game({ username, ...props }) {
         };
 
     const newGameState = {
-      gameWon: false,
+      attempts: 0,
       gameOver: false,
+      matchedTiles: 0,
       gridSize: gridSize,
       newGame: isNewGame,
-      highScores: highScores,
       tiles: generatedTiles,
+      highScores: highScores,
       uniqueTiles: uniqueTiles,
-      totalAttempts: Math.floor(uniqueTiles * 2.25),
-      remainingAttempts: Math.floor(uniqueTiles * 2.25),
     };
+
+    // Reset timer
+    setTimer(0);
+    setIsTimerActive(true);
 
     setBeingFlipped(false);
     setGameState(newGameState);
     setPrevFlippedTileIndex(-1);
+  };
+
+  const getScore = () => {
+    const minimumMoves = gameState.uniqueTiles;
+    const minimumTime = gameState.uniqueTiles * 0.3;
+    const highestScorePossible = gameState.gridSize * 500;
+
+    const timeTaken = timer <= 0 ? 1 : timer;
+    const attemptsTaken = gameState.attempts <= 0 ? 0 : gameState.attempts;
+
+    const currentScore = Math.floor(
+      (minimumTime / timeTaken) *
+        (minimumMoves / attemptsTaken) *
+        highestScorePossible
+    );
+
+    return currentScore;
   };
 
   // Reset game state
@@ -164,15 +169,6 @@ export default function Game({ username, ...props }) {
 
   const toggleTimer = () => {
     setIsTimerActive(!isTimerActive);
-  };
-
-  const restartTimer = () => {
-    setTimer(0);
-  };
-
-  const resetTimer = () => {
-    setTimer(0);
-    setIsTimerActive(false);
   };
 
   const tileClickHandler = (tileID) => {
@@ -188,28 +184,24 @@ export default function Game({ username, ...props }) {
     setBeingFlipped(true);
 
     let isGameOver = false;
-    let remainingAttempts = gameState.remainingAttempts;
+    let attempts = gameState.attempts;
+    let state = { ...gameState };
 
     if (prevFlippedTileIndex >= 0) {
+      // Increment attempt when valid tile is clicked
+      attempts += 1;
+
       // Checks if last flipped tile and current tile match
       if (
-        gameState.tiles[prevFlippedTileIndex].content ===
-        gameState.tiles[tileID].content
+        state.tiles[prevFlippedTileIndex].content ===
+        state.tiles[tileID].content
       ) {
         setBeingFlipped(false);
-        gameState.tiles[tileID].matched = true;
-        gameState.tiles[prevFlippedTileIndex].matched = true;
+        state.matchedTiles += 1;
+        state.tiles[tileID].matched = true;
+        state.tiles[prevFlippedTileIndex].matched = true;
       } else {
-        // Decrement attempt if guessed incorrectly
-        remainingAttempts -= 1;
-
-        // Game is over if all attempts are used
-        if (remainingAttempts <= 0) {
-          isGameOver = true;
-        }
-
-        unFlipFlippedTiles(isGameOver, remainingAttempts);
-        restartTimer();
+        unFlipFlippedTiles(isGameOver, attempts);
       }
 
       setPrevFlippedTileIndex(-1);
@@ -219,7 +211,7 @@ export default function Game({ username, ...props }) {
     }
 
     // Flip tiles
-    const flippedTiles = gameState.tiles.map((tile) => {
+    const flippedTiles = state.tiles.map((tile) => {
       return {
         ...tile,
         flipped: tile.matched
@@ -233,13 +225,14 @@ export default function Game({ username, ...props }) {
 
     setGameState({
       ...gameState,
+      attempts: attempts,
       gameOver: isGameOver,
       tiles: [...flippedTiles],
-      remainingAttempts: remainingAttempts,
+      matchedTiles: state.matchedTiles,
     });
   };
 
-  const unFlipFlippedTiles = (gameOver, remainingAttempts) => {
+  const unFlipFlippedTiles = (gameOver, attempts) => {
     setTimeout(() => {
       const flippedTiles = gameState.tiles.map((tile) => {
         return {
@@ -250,11 +243,11 @@ export default function Game({ username, ...props }) {
       setGameState({
         ...gameState,
         gameOver,
-        remainingAttempts,
+        attempts,
         tiles: [...flippedTiles],
       });
       setBeingFlipped(false);
-    }, 1000);
+    }, 800);
   };
 
   const gridSelectionButtonClickHandler = async (selectedGridSize) => {
@@ -336,27 +329,22 @@ export default function Game({ username, ...props }) {
 
   // Show game-over overlay if game is over
   let GameEndOverlay = <></>;
-  if (gameState.gameWon || gameState.gameOver) {
+  if (gameState.gameOver) {
     GameEndOverlay = (
       <div className="gameOverScreen center">
         <div className="top">
           <header>
-            <p>{gameState.gameWon ? "You Won!!" : "You lose!!"}</p>
+            <p>Level Complete!</p>
           </header>
 
           <main>
             <p className="score">
               <span>Score</span>
-              <span>
-                {Math.floor(
-                  (gameState.remainingAttempts / gameState.totalAttempts) * 100
-                )}
-                %
-              </span>
+              <span>{score}</span>
             </p>
             <p className="score highScore">
               <span>High Score</span>
-              <span>{gameState.highScores[gameState.gridSize]}%</span>
+              <span>{gameState.highScores[gameState.gridSize]}</span>
             </p>
           </main>
 
@@ -381,38 +369,38 @@ export default function Game({ username, ...props }) {
   let GameHeaderContent;
   if (gameState.newGame) {
     GameHeaderContent = (
-      <p className="description">
-        Select a grid layout from the below options.
-        <br />
-        Each option scales exponentially in difficulty.
-      </p>
+      <>
+        <p className="title">Tile Match</p>
+        <p className="description">
+          Select a grid layout from the below options.
+          <br />
+          Each option scales exponentially in difficulty.
+        </p>
+      </>
     );
   } else {
     GameHeaderContent = (
       <>
         <p className="description">
-          You have{" "}
-          <span className="strong">{gameState.totalAttempts} attempts</span> to
-          match all the unmatched tiles. An attempt will be removed every{" "}
-          <span className="strong">10 seconds</span>.
+          <span className="strong">Tap</span> or{" "}
+          <span className="strong">Click</span> on a tile to flip it.
+          <br />
+          Match all the <span className="strong">tile pairs</span> to complete
+          the game.
         </p>
 
         <div className="progressContainer">
           <div className="progressContainerTop">
-            <p className="progressTitle">Attempts remaining</p>
-            <p className="progressStatus">
-              {gameState.remainingAttempts} / {gameState.totalAttempts}
-            </p>
+            <p className="progressTitle">Time Elapsed</p>
+            <p className="progressStatus">{showElapsedTime(timer)}</p>
           </div>
 
-          <div
-            className="progressContainerBottom"
-            style={{
-              "--progressBarRight": `${
-                (gameState.remainingAttempts / gameState.totalAttempts) * 100
-              }%`,
-            }}
-          ></div>
+          <div className="progressContainerTop">
+            <p className="progressTitle">Matched Tiles</p>
+            <p className="progressStatus">
+              {gameState.matchedTiles} / {gameState.uniqueTiles}
+            </p>
+          </div>
         </div>
       </>
     );
@@ -428,7 +416,7 @@ export default function Game({ username, ...props }) {
             <GridSelectButton
               key={index}
               gridSize={item}
-              hue={mapRange(index, 0, 3, 260, 360) * -1}
+              hue={mapRange(index, 0, 3, 180, 360) * -1}
               clickHandler={gridSelectionButtonClickHandler}
             />
           ))}
@@ -476,10 +464,7 @@ export default function Game({ username, ...props }) {
     <div className="container">
       {GameEndOverlay}
 
-      <div className="header">
-        <p className="title">Tile Match</p>
-        {GameHeaderContent}
-      </div>
+      <div className="header">{GameHeaderContent}</div>
 
       {GameMainContent}
     </div>

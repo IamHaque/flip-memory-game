@@ -151,3 +151,16 @@ export const round = (value, decimalPlaces = 2) => {
     ).toFixed(decimalPlaces)
   );
 };
+
+export const showElapsedTime = (timer) => {
+  let elapsedTime = {
+    seconds: timer % 60,
+    minutes: Math.floor(timer / 60) % 60,
+  };
+
+  return `${
+    elapsedTime.minutes > 0 ? padNumbers(elapsedTime.minutes) + "" : "00"
+  } : ${elapsedTime.seconds > 0 ? padNumbers(elapsedTime.seconds) + "" : "00"}`;
+};
+
+const padNumbers = (num) => (num <= 9 ? `0${num}` : num);
