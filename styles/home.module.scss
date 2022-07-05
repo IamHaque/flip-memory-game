@@ -139,8 +139,13 @@
     background-color: white;
 
     &__Title {
-      font-size: 1.5em;
+      font-size: 1.8em;
       font-weight: 700;
+    }
+
+    &__Description {
+      font-size: 1.2em;
+      word-wrap: break-word;
     }
 
     &__Buttons {

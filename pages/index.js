@@ -130,7 +130,13 @@ export default function Home() {
     >
       <div className={styles.modal}>
         <p className={styles.modal__Title}>Change username?</p>
-        <p className={styles.modal__Description}>
+        <p
+          className={styles.modal__Description}
+          style={{
+            opacity: !showModal ? "0" : "1",
+            transition: "opacity 200ms ease-out 300ms",
+          }}
+        >
           If you choose to change your username, you cannot get the current
           username back.
           <br />
