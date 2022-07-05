@@ -11,18 +11,16 @@ export default function Home() {
   const [response, setResponse] = useState(undefined);
 
   useEffect(() => {
-    let localUsername = localStorage.getItem("tileMatchUsername");
-    localUsername = JSON.parse(localUsername);
+    let localUsername = JSON.parse(localStorage.getItem("tileMatchUsername"));
     if (localUsername) {
       setUserExists(true);
       setUsername(localUsername);
     }
 
-    const vh = window.innerHeight * 0.01;
+    const vh = window.innerHeight - 1;
     document.documentElement.style.setProperty("--vh", `${vh}px`);
-
     window.addEventListener("resize", () => {
-      const vh = window.innerHeight * 0.01;
+      const vh = window.innerHeight - 1;
       document.documentElement.style.setProperty("--vh", `${vh}px`);
     });
   }, []);
