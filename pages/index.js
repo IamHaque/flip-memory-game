@@ -6,6 +6,7 @@ import styles from "../styles/home.module.scss";
 
 export default function Home() {
   const [username, setUsername] = useState("");
+  const [showModal, setShowModal] = useState(false);
   const [userExists, setUserExists] = useState(false);
   const [response, setResponse] = useState(undefined);
 
@@ -42,6 +43,15 @@ export default function Home() {
     setUserExists(false);
     setResponse(undefined);
     localStorage.setItem("tileMatchUsername", JSON.stringify(""));
+    closeModal();
+  };
+
+  const openModal = () => {
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
   };
 
   let MainContent;
@@ -71,7 +81,7 @@ export default function Home() {
             type="text"
             id="username"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => setUsername(e.target.value.trim())}
           />
         </div>
         <div
@@ -101,7 +111,7 @@ export default function Home() {
       <div
         className={`${styles.changeUsername}`}
         onClick={() => {
-          usernameChangeHandler();
+          openModal();
         }}
       >
         Change Username
@@ -109,8 +119,50 @@ export default function Home() {
     );
   }
 
+  let Modal = (
+    <div
+      className={styles.modalContainer}
+      style={{
+        opacity: !showModal ? "0" : "1",
+        left: showModal ? "0" : "-200vw",
+        visibility: !showModal ? "hidden" : "visible",
+      }}
+    >
+      <div className={styles.modal}>
+        <p className={styles.modal__Title}>Change username?</p>
+        <p className={styles.modal__Description}>
+          If you choose to change your username, you cannot get the current
+          username back.
+          <br />
+          Current scores will be displayed on the leaderboard but it cannot be
+          updated.
+        </p>
+        <div className={styles.modal__Buttons}>
+          <div
+            className={styles.modal__Cancel}
+            onClick={() => {
+              closeModal();
+            }}
+          >
+            No
+          </div>
+          <div
+            className={styles.modal__Confirm}
+            onClick={() => {
+              usernameChangeHandler();
+            }}
+          >
+            Yes
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="container">
+      {Modal}
+
       <header className={`${styles.header} center`}>
         <p className="title">Tile Match</p>
       </header>
@@ -130,7 +182,7 @@ export default function Home() {
                 query: { username: username },
               }}
             >
-              Start Game
+              {userExists ? "Start Game" : "Select Username Above"}
             </Link>
           </div>
 

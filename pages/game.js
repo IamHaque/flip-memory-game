@@ -200,6 +200,8 @@ export default function Game({ username, ...props }) {
         state.matchedTiles += 1;
         state.tiles[tileID].matched = true;
         state.tiles[prevFlippedTileIndex].matched = true;
+
+        vibrate();
       } else {
         unFlipFlippedTiles(isGameOver, attempts);
       }
@@ -292,6 +294,22 @@ export default function Game({ username, ...props }) {
     if (data && data.leaderboard) {
       setLeaderBoard(data.leaderboard);
     }
+  };
+
+  const vibrate = () => {
+    if (!window) {
+      return;
+    }
+
+    if (!window.navigator) {
+      return;
+    }
+
+    if (!window.navigator.vibrate) {
+      return;
+    }
+
+    window.navigator.vibrate([200]);
   };
 
   let LeaderBoard;

@@ -117,3 +117,60 @@
     padding: 1em;
   }
 }
+
+.modalContainer {
+  inset: 0;
+  display: flex;
+  position: absolute;
+  align-items: center;
+  justify-content: center;
+  transition: all 300ms ease-out;
+  background-color: hsla(0, 0%, 0%, 70%);
+
+  .modal {
+    gap: 1em;
+    width: 80%;
+    padding: 1em;
+    display: flex;
+    color: black;
+    max-width: 420px;
+    border-radius: 2px;
+    flex-direction: column;
+    background-color: white;
+
+    &__Title {
+      font-size: 1.5em;
+      font-weight: 700;
+    }
+
+    &__Buttons {
+      --hue: 250;
+
+      gap: 1em;
+      display: flex;
+      color: white;
+      margin-top: 1em;
+      text-align: center;
+      justify-content: end;
+      text-transform: uppercase;
+
+      & > div {
+        cursor: pointer;
+        border-radius: 2px;
+        padding: 0.5em 2em;
+        transition: background-color 200ms ease-in-out;
+        background-color: hsl(var(--hue, 0), 29%, 40%);
+
+        &:focus,
+        &:active,
+        &:hover {
+          background-color: hsl(var(--hue, 0), 29%, 35%);
+        }
+      }
+    }
+
+    &__Confirm {
+      --hue: 0;
+    }
+  }
+}
