@@ -1,4 +1,10 @@
-const GridSelectButton = ({ hue, gridSize, clickHandler, ...props }) => {
+const GridSelectButton = ({
+  hue,
+  isBusy,
+  gridSize,
+  clickHandler,
+  ...props
+}) => {
   return (
     <div
       className="gridSelectButton center"
@@ -7,7 +13,7 @@ const GridSelectButton = ({ hue, gridSize, clickHandler, ...props }) => {
       }}
       onClick={() => clickHandler(gridSize)}
     >
-      {gridSize} x {gridSize}
+      {isBusy ? "..." : `${gridSize} x ${gridSize}`}
     </div>
   );
 };

@@ -110,6 +110,7 @@ export default function Game({ username, ...props }) {
           {GRID_SIZES.map((item, index) => (
             <GridSelectButton
               key={index}
+              isBusy={isBusy}
               gridSize={item}
               hue={mapRange(index, 0, 3, 180, 360) * -1}
               clickHandler={gridSelectionButtonClickHandler}
