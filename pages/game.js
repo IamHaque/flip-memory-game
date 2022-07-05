@@ -44,31 +44,7 @@ export default function Game({ username, ...props }) {
   // Update game state
   useEffect(() => {
     if (gameState.gameOver) {
-      const currentScore = getScore();
-      setScore(currentScore);
-
-      // Save high score to local storage
-      if (currentScore > gameState.highScores[gameState.gridSize]) {
-        const updatedHighScores = { ...gameState.highScores };
-        updatedHighScores[gameState.gridSize] = currentScore;
-
-        localStorage.setItem(
-          "tileMatchHighScores",
-          JSON.stringify(updatedHighScores)
-        );
-
-        (async () => {
-          await updateDBData(currentScore);
-        })();
-
-        setGameState({ ...gameState, highScores: updatedHighScores });
-      }
-
-      (async () => {
-        await getLeaderboardData();
-      })();
-
-      toggleTimer();
+      handleGameOver();
       return;
     }
 
@@ -294,6 +270,28 @@ export default function Game({ username, ...props }) {
     if (data && data.leaderboard) {
       setLeaderBoard(data.leaderboard);
     }
+  };
+
+  const handleGameOver = async () => {
+    const currentScore = getScore();
+    setScore(currentScore);
+
+    // Save high score to local storage
+    if (currentScore > gameState.highScores[gameState.gridSize]) {
+      const updatedHighScores = { ...gameState.highScores };
+      updatedHighScores[gameState.gridSize] = currentScore;
+
+      localStorage.setItem(
+        "tileMatchHighScores",
+        JSON.stringify(updatedHighScores)
+      );
+
+      await updateDBData(currentScore);
+      setGameState({ ...gameState, highScores: updatedHighScores });
+    }
+
+    await getLeaderboardData();
+    toggleTimer();
   };
 
   const vibrate = () => {

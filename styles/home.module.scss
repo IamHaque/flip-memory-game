@@ -112,6 +112,14 @@
     }
   }
 
+  .showLeaderboardButton {
+    --hue: 130;
+
+    & > a {
+      padding: 1em;
+    }
+  }
+
   .changeUsername {
     --hue: 0;
     padding: 1em;

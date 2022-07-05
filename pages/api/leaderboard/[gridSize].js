@@ -16,7 +16,13 @@ export default async function handler(req, res) {
 
   try {
     // Get all users from DB
-    const users = await prisma.users.findMany();
+    const users = await prisma.users.findMany({
+      orderBy: [
+        {
+          updatedAt: "asc",
+        },
+      ],
+    });
 
     // Get leaderboard data for grid size
     const leaderboard = users

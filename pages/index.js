@@ -43,6 +43,7 @@ export default function Home() {
     setUserExists(false);
     setResponse(undefined);
     localStorage.setItem("tileMatchUsername", JSON.stringify(""));
+    localStorage.setItem("tileMatchHighScores", JSON.stringify({}));
     closeModal();
   };
 
@@ -105,17 +106,38 @@ export default function Home() {
     );
   }
 
-  let ChangeUsernameButton;
+  let BottomButtons;
   if (userExists) {
-    ChangeUsernameButton = (
-      <div
-        className={`${styles.changeUsername}`}
-        onClick={() => {
-          openModal();
-        }}
-      >
-        Change Username
-      </div>
+    BottomButtons = (
+      <>
+        <div
+          className={`${styles.startGameButton} ${
+            userExists ? "" : "disabled"
+          }`}
+        >
+          <Link
+            href={{
+              pathname: "/game",
+              query: { username: username },
+            }}
+          >
+            Start Game
+          </Link>
+        </div>
+
+        <div className={styles.showLeaderboardButton}>
+          <Link href={"/leaderboard"}>Show Leaderboard</Link>
+        </div>
+
+        <div
+          className={`${styles.changeUsername}`}
+          onClick={() => {
+            openModal();
+          }}
+        >
+          Change Username
+        </div>
+      </>
     );
   }
 
@@ -176,24 +198,7 @@ export default function Home() {
       <main className={`${styles.main} center`}>
         {MainContent}
 
-        <div className={styles.bottomButtons}>
-          <div
-            className={`${styles.startGameButton} ${
-              userExists ? "" : "disabled"
-            }`}
-          >
-            <Link
-              href={{
-                pathname: "/game",
-                query: { username: username },
-              }}
-            >
-              {userExists ? "Start Game" : "Select Username Above"}
-            </Link>
-          </div>
-
-          {ChangeUsernameButton}
-        </div>
+        <div className={styles.bottomButtons}>{BottomButtons}</div>
       </main>
     </div>
   );
