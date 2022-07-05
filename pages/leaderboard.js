@@ -9,6 +9,7 @@ import GridSelectButton from "../components/grid-selection-button";
 export default function Game({ username, ...props }) {
   const GRID_SIZES = [2, 4, 6, 8];
 
+  const [isBusy, setIsBusy] = useState(false);
   const [gridSize, setGridSize] = useState(undefined);
   const [onMainScreen, setOnMainScreen] = useState(true);
   const [currentUser, setCurrentUser] = useState(undefined);
@@ -23,15 +24,22 @@ export default function Game({ username, ...props }) {
   }, []);
 
   const resetState = () => {
+    setIsBusy(false);
     setOnMainScreen(true);
     setGridSize(undefined);
     setLeaderBoardData([]);
   };
 
   const gridSelectionButtonClickHandler = async (selectedGridSize) => {
+    if (isBusy) return;
+
+    setIsBusy(true);
+
     await getLeaderboardData(selectedGridSize);
     setGridSize(selectedGridSize);
     setOnMainScreen(false);
+
+    setIsBusy(false);
   };
 
   const getLeaderboardData = async (selectedGridSize) => {
