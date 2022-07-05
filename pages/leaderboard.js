@@ -18,7 +18,6 @@ export default function Game({ username, ...props }) {
   // Initialize game data on page load
   useEffect(() => {
     let localUsername = JSON.parse(localStorage.getItem("tileMatchUsername"));
-    localUsername = JSON.parse(localUsername);
     if (localUsername) {
       setCurrentUser(localUsername);
     }
