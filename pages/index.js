@@ -13,11 +13,18 @@ export default function Home() {
   useEffect(() => {
     let localUsername = localStorage.getItem("tileMatchUsername");
     localUsername = JSON.parse(localUsername);
-
     if (localUsername) {
       setUserExists(true);
       setUsername(localUsername);
     }
+
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty("--vh", `${vh}px`);
+
+    window.addEventListener("resize", () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty("--vh", `${vh}px`);
+    });
   }, []);
 
   const registerUser = async () => {
