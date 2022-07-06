@@ -5,6 +5,7 @@ import Link from "next/link";
 import { mapRange, initializeTiles, showElapsedTime } from "../shared/utils";
 
 import Tile from "../components/tile";
+import Leaderboard from "../components/leaderboard";
 import GridSelectButton from "../components/grid-selection-button";
 
 export default function Game({ username, ...props }) {
@@ -317,39 +318,6 @@ export default function Game({ username, ...props }) {
     window.navigator.vibrate([200]);
   };
 
-  let LeaderBoard;
-  if (leaderBoard && leaderBoard.length > 0) {
-    LeaderBoard = (
-      <>
-        <p className="titleText">Leader Board</p>
-
-        <section className="leaderboardContainer">
-          {leaderBoard.map((user, index) => (
-            <p
-              className={`row ${user.username === currentUser ? "active" : ""}`}
-              key={index}
-            >
-              <span>{user.rank}.</span>
-              <span>{user.username}</span>
-              <span>{user.score}</span>
-            </p>
-          ))}
-          {leaderBoard.length < 5 ? (
-            new Array(5 - leaderBoard.length).fill(0).map((_, index) => (
-              <p className="row" key={index + "randomSalt01"}>
-                <span>-</span>
-                <span>-</span>
-                <span>-</span>
-              </p>
-            ))
-          ) : (
-            <></>
-          )}
-        </section>
-      </>
-    );
-  }
-
   // Show game-over overlay if game is over
   let GameEndOverlay = <></>;
   if (gameState.gameOver) {
@@ -383,7 +351,14 @@ export default function Game({ username, ...props }) {
           </footer>
         </div>
 
-        <div className="bottom">{LeaderBoard}</div>
+        <div className="bottom">
+          <Leaderboard
+            minDataLength={0}
+            data={leaderBoard}
+            minLeaderboardUsers={5}
+            currentUser={currentUser}
+          />
+        </div>
       </div>
     );
   }

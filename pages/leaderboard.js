@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { mapRange } from "../shared/utils";
 
+import Leaderboard from "../components/leaderboard";
 import GridSelectButton from "../components/grid-selection-button";
 
 export default function Game({ username, ...props }) {
@@ -68,36 +69,6 @@ export default function Game({ username, ...props }) {
     }
   };
 
-  let LeaderBoard;
-  if (leaderboardData && leaderboardData.length >= 0) {
-    LeaderBoard = (
-      <section className="leaderboardContainer">
-        {leaderboardData.map((user, index) => (
-          <p
-            className={`row ${user.username === currentUser ? "active" : ""}`}
-            key={index}
-          >
-            <span>{user.rank}.</span>
-            <span>{user.username}</span>
-            <span>{user.score}</span>
-          </p>
-        ))}
-
-        {leaderboardData.length < 10 ? (
-          new Array(10 - leaderboardData.length).fill(0).map((_, index) => (
-            <p className="row" key={index + "randomSalt01"}>
-              <span>-</span>
-              <span>-</span>
-              <span>-</span>
-            </p>
-          ))
-        ) : (
-          <></>
-        )}
-      </section>
-    );
-  }
-
   let GameHeaderContent = (
     <>
       <p className="title">Tile Match</p>
@@ -124,6 +95,7 @@ export default function Game({ username, ...props }) {
             />
           ))}
         </div>
+
         <div className="bottomButton">
           <Link href="/">Back to Main Menu</Link>
         </div>
@@ -133,9 +105,12 @@ export default function Game({ username, ...props }) {
     GameMainContent = (
       <>
         <div className="main leaderboardMain">
-          <p className="titleText center">Leader Board</p>
-
-          {LeaderBoard}
+          <Leaderboard
+            minDataLength={-1}
+            data={leaderboardData}
+            minLeaderboardUsers={10}
+            currentUser={currentUser}
+          />
         </div>
 
         <div className="bottomButton" onClick={resetState}>
