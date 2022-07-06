@@ -77,7 +77,7 @@ export default function Game({ username, ...props }) {
             className={`row ${user.username === currentUser ? "active" : ""}`}
             key={index}
           >
-            <span>{index + 1}.</span>
+            <span>{user.rank}.</span>
             <span>{user.username}</span>
             <span>{user.score}</span>
           </p>

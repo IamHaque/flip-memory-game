@@ -19,19 +19,20 @@ export default async function handler(req, res) {
     const users = await prisma.users.findMany({
       orderBy: [
         {
-          updatedAt: "asc",
+          username: "asc",
         },
       ],
     });
 
     // Get leaderboard data for grid size
-    const leaderboard = users
+    let leaderboard = users
       .reduce((acc, user) => {
         const score = getGridScoreForUser(user, gridSize);
         return score > 0
           ? [
               ...acc,
               {
+                rank: 0,
                 score,
                 username: user.username,
               },
@@ -39,6 +40,22 @@ export default async function handler(req, res) {
           : acc;
       }, [])
       .sort((a, b) => b.score - a.score);
+
+    // Rank the leaderboard appropriately
+    let currentRank = 1;
+    while (currentRank <= leaderboard.length) {
+      const currentUserScore = leaderboard[currentRank - 1].score;
+      leaderboard = leaderboard.map((user) => {
+        return user.score === currentUserScore
+          ? { ...user, rank: currentRank }
+          : user;
+      });
+
+      const usersWithCurrentUserScore = leaderboard.filter(
+        (user) => user.score === currentUserScore
+      ).length;
+      currentRank += usersWithCurrentUserScore;
+    }
 
     // Return the leaderboard data for grid size
     return res.status(200).json({ status: "success", leaderboard });
